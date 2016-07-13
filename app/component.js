@@ -5,5 +5,7 @@ module.exports = function () {
   element.innerHTML = 'Hello All Worlds !!!';
   element.className = styles.redButton;
 
+  console.log(element);
+
   return element;
 };

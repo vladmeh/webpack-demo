@@ -10,6 +10,8 @@ const PATHS = {
   build: path.join(__dirname, 'build')
 };
 
+const pkg =  require ( './package.json' ) ; 
+
 const common = {
 
   // Entry accepts a path or an object of entries.
@@ -17,11 +19,12 @@ const common = {
   // convenient with more complex configurations.
   entry: {
     app: PATHS.app,
-    vendor: ['react']
+    //vendor: ['react']
   },
   output: {
     path: PATHS.build,
-    filename: 'js/[name]/[name].js'
+    //filename: 'js/[name]/[name].js'
+    filename: '[name].js'
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -39,12 +42,24 @@ switch(process.env.npm_lifecycle_event) {
     config = merge(
       common,
       {
-        devtool: 'source-map'
+        devtool: 'source-map',
+        output: {
+          path: PATHS.build,
+          filename: '[name].[chunkhash].js',
+          // This is used for require.ensure. The setup
+          // will work without but this is useful to set.
+          chunkFilename: '[chunkhash].js'
+        }
       },
+      parts.clean(PATHS.build),
       parts.setFreeVariable(
         'process.env.NODE_ENV',
         'production'
       ),
+      parts.extractBundle({
+        name: 'vendor',
+        entries: Object.keys(pkg.dependencies)
+      }),
       parts.minify(),
       parts.setupCSS(PATHS.app)
     );
