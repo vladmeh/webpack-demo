@@ -1,11 +1,11 @@
 module.exports = function () {
   var element = document.createElement('h1');
-  var styles = require('./main.css');
 
-  element.innerHTML = 'Hello All Worlds !!!';
-  element.className = styles.redButton;
-
-  console.log(element);
+  element.id = 'head';
+  element.className = 'pure-button';
+  element.classList.add('pure-button-primary');
+  //element.classList.add('pure-button-active');
+  element.innerHTML = 'Hello worlds !!!';
 
   return element;
 };

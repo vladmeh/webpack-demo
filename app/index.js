@@ -1,4 +1,3 @@
-require('./main.css');
 require('react');
 var $ = require('jquery');
 

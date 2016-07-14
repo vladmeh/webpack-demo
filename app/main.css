@@ -4,3 +4,6 @@ body {
 :local(.redButton) {
   background: red;
 }
+.text-center{
+  text-align: center;
+}
