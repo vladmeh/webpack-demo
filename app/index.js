@@ -1,4 +1,5 @@
 require('react');
+require('react-dom');
 var $ = require('jquery');
 
 var component = require('./component');

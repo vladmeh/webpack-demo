@@ -5,6 +5,8 @@ const validate = require('webpack-validator');
 
 const parts = require('./libs/parts');
 
+const TARGET = process.env.npm_lifecycle_event;
+
 const PATHS = {
   app: path.join(__dirname, 'app'),
   style: [
@@ -16,33 +18,43 @@ const PATHS = {
 
 const pkg =  require ( './package.json' ) ;
 
-const common = {
+process.env.BABEL_ENV = TARGET;
 
-  // Entry accepts a path or an object of entries.
-  // We'll be using the latter form given it's
-  // convenient with more complex configurations.
-  entry: {
-    style: PATHS.style,
-    app: PATHS.app,
-    //vendor: ['react']
+const common = merge(
+  {
+
+    // Entry accepts a path or an object of entries.
+    // We'll be using the latter form given it's
+    // convenient with more complex configurations.
+    entry: {
+      style: PATHS.style,
+      app: PATHS.app,
+      //vendor: ['react']
+    },
+    output: {
+      path: PATHS.build,
+      //filename: 'js/[name]/[name].js'
+      filename: '[name].js'
+    },
+    plugins: [
+      new HtmlWebpackPlugin({
+        title: 'Webpack demo'
+      })
+    ],
+    // Important! Do not remove ''. If you do, imports without
+    // an extension won't work anymore!
+    resolve: {
+      extensions: ['', '.js', '.jsx']
+    }
   },
-  output: {
-    path: PATHS.build,
-    //filename: 'js/[name]/[name].js'
-    filename: '[name].js'
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      title: 'Webpack demo'
-    })
-  ]
-};
+  parts.loadJSX(PATHS.app)
+);
 
 
 var config;
 
 // Detect how npm is run and branch based on that
-switch(process.env.npm_lifecycle_event) {
+switch(TARGET) {
   case 'build':
   case 'stats':
     config = merge(
@@ -51,6 +63,8 @@ switch(process.env.npm_lifecycle_event) {
         devtool: 'source-map',
         output: {
           path: PATHS.build,
+          // Tweak this to match your GitHub project name
+          publicPath: '/webpack-demo/',
           filename: '[name].[chunkhash].js',
           // This is used for require.ensure. The setup
           // will work without but this is useful to set.
@@ -67,6 +81,7 @@ switch(process.env.npm_lifecycle_event) {
         name: 'vendor',
         entries: Object.keys(pkg.dependencies)
       }),
+      //parts.loadJSX(PATHS.app),
       parts.minify(),
       parts.extractCSS(PATHS.style),
       parts.purifyCSS([PATHS.app])
